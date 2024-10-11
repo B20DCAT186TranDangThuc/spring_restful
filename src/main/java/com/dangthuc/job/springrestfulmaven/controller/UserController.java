@@ -2,6 +2,7 @@ package com.dangthuc.job.springrestfulmaven.controller;
 
 import com.dangthuc.job.springrestfulmaven.entity.User;
 import com.dangthuc.job.springrestfulmaven.service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
@@ -17,31 +18,31 @@ public class UserController {
         this.userService = userService;
     }
 
-    @PostMapping("/user")
+    @PostMapping("users")
     public ResponseEntity<User> create(@RequestBody User request) {
 
-        return ResponseEntity.ok(userService.createUser(request));
+        return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(request));
     }
 
-    @DeleteMapping("/user/{id}")
-    public ResponseEntity<String> delete(@PathVariable("id") Long id) {
+    @DeleteMapping("users/{id}")
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
         userService.deleteUser(id);
-        return ResponseEntity.ok("Xoa thanh cong");
+        return ResponseEntity.noContent().build();
     }
 
-    @GetMapping("/user")
+    @GetMapping("users")
     public ResponseEntity<List<User>> getAll() {
 
         return ResponseEntity.ok(userService.fetchAllUser());
     }
 
-    @GetMapping("/user/{id}")
+    @GetMapping("users/{id}")
     public ResponseEntity<User> getUserById(@PathVariable("id") Long id) {
 
         return ResponseEntity.ok(userService.fetchUserById(id));
     }
 
-    @PutMapping("/user")
+    @PutMapping("users")
     public ResponseEntity<User> update(@RequestBody User request) {
         return ResponseEntity.ok(userService.updateUser(request));
     }
