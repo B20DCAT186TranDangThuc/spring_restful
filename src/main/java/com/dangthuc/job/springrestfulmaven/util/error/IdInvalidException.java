@@ -1,4 +1,4 @@
-package com.dangthuc.job.springrestfulmaven.service.error;
+package com.dangthuc.job.springrestfulmaven.util.error;
 
 public class IdInvalidException extends Exception{
 

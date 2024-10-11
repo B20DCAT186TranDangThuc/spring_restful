@@ -2,7 +2,7 @@ package com.dangthuc.job.springrestfulmaven.controller;
 
 import com.dangthuc.job.springrestfulmaven.entity.User;
 import com.dangthuc.job.springrestfulmaven.service.UserService;
-import com.dangthuc.job.springrestfulmaven.service.error.IdInvalidException;
+import com.dangthuc.job.springrestfulmaven.util.error.IdInvalidException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
