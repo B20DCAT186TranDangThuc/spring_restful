@@ -2,6 +2,7 @@ package com.dangthuc.job.springrestfulmaven.controller;
 
 import com.dangthuc.job.springrestfulmaven.entity.User;
 import com.dangthuc.job.springrestfulmaven.service.UserService;
+import com.dangthuc.job.springrestfulmaven.service.error.IdInvalidException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -25,7 +26,12 @@ public class UserController {
     }
 
     @DeleteMapping("users/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id) throws IdInvalidException {
+
+        if(id >= 1500) {
+            throw new IdInvalidException("Id khong lon hon 1500");
+        }
+
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
     }
