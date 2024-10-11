@@ -29,4 +29,16 @@ public class UserService {
     public User fetchUserById(Long id) {
         return userRepository.findById(id).orElse(null);
     }
+
+    public User updateUser(User request) {
+        User user = this.fetchUserById(request.getId());
+        if (user != null) {
+            user.setName(request.getName());
+            user.setEmail(request.getEmail());
+            user.setPassword(request.getPassword());
+            user = userRepository.save(user);
+        }
+
+        return user;
+    }
 }
