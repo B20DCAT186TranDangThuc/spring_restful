@@ -4,6 +4,8 @@ import com.dangthuc.job.springrestfulmaven.entity.User;
 import com.dangthuc.job.springrestfulmaven.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class UserService {
     private final UserRepository userRepository;
@@ -18,5 +20,13 @@ public class UserService {
 
     public void deleteUser(Long id) {
         userRepository.deleteById(id);
+    }
+
+    public List<User> fetchAllUser() {
+        return userRepository.findAll();
+    }
+
+    public User fetchUserById(Long id) {
+        return userRepository.findById(id).orElse(null);
     }
 }
