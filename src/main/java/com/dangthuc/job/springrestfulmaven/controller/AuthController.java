@@ -6,6 +6,7 @@ import com.dangthuc.job.springrestfulmaven.entity.User;
 import com.dangthuc.job.springrestfulmaven.service.UserService;
 import com.dangthuc.job.springrestfulmaven.util.SecurityUtil;
 import com.dangthuc.job.springrestfulmaven.util.annotation.ApiMessage;
+import com.dangthuc.job.springrestfulmaven.util.error.IdInvalidException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -58,7 +59,7 @@ public class AuthController {
                         .build())
                 .build();
         // create a tokent
-        String accessToken = this.securityUtil.createAccessToken(authentication, res.getUser());
+        String accessToken = this.securityUtil.createAccessToken(authentication.getName(), res.getUser());
 
         res.setAccessToken(accessToken);
 
@@ -100,14 +101,48 @@ public class AuthController {
 
     @GetMapping("/auth/refresh")
     @ApiMessage("Get user by refresh token")
-    public ResponseEntity<String> getRefreshToken(
+    public ResponseEntity<ResLoginDTO> getRefreshToken(
             @CookieValue(name = "refresh_token") String refresh_token
-    ) {
+    ) throws IdInvalidException {
 
         // check valid
         Jwt decodedToken = this.securityUtil.checkValidRefreshToken(refresh_token);
         String email = decodedToken.getSubject();
-        return ResponseEntity.ok().body(email);
+
+        User currentUser = this.userService.getUserByRefreshTokenAndEmail(refresh_token, email);
+        if (currentUser == null) {
+            throw new IdInvalidException("Refresh token khong hop le");
+        }
+
+        ResLoginDTO res = ResLoginDTO.builder()
+                .user(ResLoginDTO.UserLogin.builder()
+                        .id(currentUser.getId())
+                        .email(currentUser.getEmail())
+                        .name(currentUser.getName())
+                        .build())
+                .build();
+        // create a tokent
+        String accessToken = this.securityUtil.createAccessToken(email, res.getUser());
+
+        res.setAccessToken(accessToken);
+
+        String new_refresh_token = this.securityUtil.createRefreshToken(email, res);
+
+        // update user
+        this.userService.updateUserToken(new_refresh_token, email);
+
+        // set cookies
+        ResponseCookie resCookies = ResponseCookie
+                .from("refresh_token", new_refresh_token)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .maxAge(refreshTokenExpiration)
+                .build();
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.SET_COOKIE, resCookies.toString())
+                .body(res);
     }
 
 }
