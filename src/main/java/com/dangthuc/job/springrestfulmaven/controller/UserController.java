@@ -1,12 +1,15 @@
 package com.dangthuc.job.springrestfulmaven.controller;
 
+import com.dangthuc.job.springrestfulmaven.dto.ResCreateUserDTO;
+import com.dangthuc.job.springrestfulmaven.dto.ResUpdateUserDTO;
+import com.dangthuc.job.springrestfulmaven.dto.ResUserDTO;
 import com.dangthuc.job.springrestfulmaven.dto.ResultPaginationDTO;
 import com.dangthuc.job.springrestfulmaven.entity.User;
 import com.dangthuc.job.springrestfulmaven.service.UserService;
 import com.dangthuc.job.springrestfulmaven.util.annotation.ApiMessage;
 import com.dangthuc.job.springrestfulmaven.util.error.IdInvalidException;
 import com.turkraft.springfilter.boot.Filter;
-import org.springframework.data.domain.PageRequest;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
@@ -14,10 +17,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
-
 @Controller
+@RequestMapping("/api/v1")
 public class UserController {
 
     private final UserService userService;
@@ -28,7 +29,11 @@ public class UserController {
 
     @PostMapping("users")
     @ApiMessage("create one users")
-    public ResponseEntity<User> create(@RequestBody User request) {
+    public ResponseEntity<ResCreateUserDTO> create(@Valid @RequestBody User request) throws IdInvalidException {
+
+        if (this.userService.isEmailExist(request.getEmail())) {
+            throw new IdInvalidException("Email " + request.getEmail() + " already exists");
+        }
 
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(request));
     }
@@ -37,8 +42,8 @@ public class UserController {
     @ApiMessage("delete one user")
     public ResponseEntity<Void> delete(@PathVariable("id") Long id) throws IdInvalidException {
 
-        if (id >= 1500) {
-            throw new IdInvalidException("Id khong lon hon 1500");
+        if (!this.userService.isIdExist(id)) {
+            throw new IdInvalidException("Id " + id + " not found");
         }
 
         userService.deleteUser(id);
@@ -47,22 +52,28 @@ public class UserController {
 
     @GetMapping("users")
     @ApiMessage("fetch all users")
-    public ResponseEntity<ResultPaginationDTO> getAll(
-            @Filter Specification<User> spec, Pageable pageable) {
+    public ResponseEntity<ResultPaginationDTO> getAll(@Filter Specification<User> spec, Pageable pageable) {
 
         return ResponseEntity.ok(userService.fetchAllUser(spec, pageable));
     }
 
     @GetMapping("users/{id}")
     @ApiMessage("fetch one user")
-    public ResponseEntity<User> getUserById(@PathVariable("id") Long id) {
+    public ResponseEntity<ResUserDTO> getUserById(@PathVariable("id") Long id) throws IdInvalidException {
+
+        if (!this.userService.isIdExist(id)) {
+            throw new IdInvalidException("Id " + id + " not found");
+        }
 
         return ResponseEntity.ok(userService.fetchUserById(id));
     }
 
     @PutMapping("users")
     @ApiMessage("update one user")
-    public ResponseEntity<User> update(@RequestBody User request) {
+    public ResponseEntity<ResUpdateUserDTO> update(@RequestBody User request) throws IdInvalidException {
+        if (!this.userService.isIdExist(request.getId())) {
+            throw new IdInvalidException("User với id = " + request.getId() + " không tồn tại");
+        }
         return ResponseEntity.ok(userService.updateUser(request));
     }
 }

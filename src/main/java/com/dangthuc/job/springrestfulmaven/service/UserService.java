@@ -1,5 +1,8 @@
 package com.dangthuc.job.springrestfulmaven.service;
 
+import com.dangthuc.job.springrestfulmaven.dto.ResCreateUserDTO;
+import com.dangthuc.job.springrestfulmaven.dto.ResUpdateUserDTO;
+import com.dangthuc.job.springrestfulmaven.dto.ResUserDTO;
 import com.dangthuc.job.springrestfulmaven.dto.ResultPaginationDTO;
 import com.dangthuc.job.springrestfulmaven.entity.Meta;
 import com.dangthuc.job.springrestfulmaven.entity.User;
@@ -11,6 +14,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
@@ -18,15 +23,38 @@ public class UserService {
 
     private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository,
-                       PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
-    public User createUser(User user) {
+    public boolean isEmailExist(String email) {
+        return userRepository.existsByEmail(email);
+    }
+
+    public ResCreateUserDTO createUser(User user) {
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
-        return userRepository.save(user);
+        return this.convertResCreateUserDTO(userRepository.save(user));
+    }
+
+    private ResCreateUserDTO convertResCreateUserDTO(User user) {
+        return ResCreateUserDTO.builder().id(user.getId()).email(user.getEmail()).name(user.getName()).address(user.getAddress()).gender(user.getGender()).createdAt(user.getCreatedAt()).build();
+    }
+
+    private ResUserDTO convertResUserDTO(User user) {
+        return ResUserDTO.builder().id(user.getId()).email(user.getEmail()).name(user.getName()).address(user.getAddress()).gender(user.getGender()).createdAt(user.getCreatedAt()).updatedAt(user.getUpdatedAt()).build();
+    }
+
+    private ResUpdateUserDTO convertToUpdateUserDTO(User user) {
+        return ResUpdateUserDTO.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .age(user.getAge())
+                .updatedAt(user.getUpdatedAt())
+                .gender(user.getGender())
+                .address(user.getAddress())
+                .build();
     }
 
     public void deleteUser(Long id) {
@@ -45,28 +73,43 @@ public class UserService {
         meta.setTotal(users.getTotalElements());
 
         rs.setMeta(meta);
-        rs.setResult(users);
+
+        List<ResUserDTO> listUser = users.getContent()
+                .stream().map(item -> this.convertResUserDTO(item)).collect(Collectors.toList());
+
+        rs.setResult(listUser);
 
         return rs;
     }
 
-    public User fetchUserById(Long id) {
-        return userRepository.findById(id).orElse(null);
+    public ResUserDTO fetchUserById(Long id) {
+        Optional<User> user = this.userRepository.findById(id);
+        if (user.isPresent()) {
+            return this.convertResUserDTO(user.get());
+        }
+        return null;
     }
 
-    public User updateUser(User request) {
-        User user = this.fetchUserById(request.getId());
-        if (user != null) {
+    public ResUpdateUserDTO updateUser(User request) {
+        Optional<User> oUser = this.userRepository.findById(request.getId());
+        User user = oUser.get();
+        if (oUser.isPresent()) {
+            user.setAddress(request.getAddress());
+            user.setGender(request.getGender());
+            user.setAge(request.getAge());
             user.setName(request.getName());
-            user.setEmail(request.getEmail());
-            user.setPassword(request.getPassword());
+
             user = userRepository.save(user);
         }
 
-        return user;
+        return this.convertToUpdateUserDTO(user);
     }
 
     public User fetchUserByEmail(String username) {
         return userRepository.findByEmail(username);
+    }
+
+    public boolean isIdExist(Long id) {
+        return this.userRepository.existsById(id);
     }
 }
