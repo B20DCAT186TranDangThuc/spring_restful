@@ -1,14 +1,18 @@
 package com.dangthuc.job.springrestfulmaven.controller;
 
+import com.dangthuc.job.springrestfulmaven.dto.ResultPaginationDTO;
 import com.dangthuc.job.springrestfulmaven.entity.User;
 import com.dangthuc.job.springrestfulmaven.service.UserService;
 import com.dangthuc.job.springrestfulmaven.util.error.IdInvalidException;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @Controller
 public class UserController {
@@ -28,7 +32,7 @@ public class UserController {
     @DeleteMapping("users/{id}")
     public ResponseEntity<Void> delete(@PathVariable("id") Long id) throws IdInvalidException {
 
-        if(id >= 1500) {
+        if (id >= 1500) {
             throw new IdInvalidException("Id khong lon hon 1500");
         }
 
@@ -37,9 +41,19 @@ public class UserController {
     }
 
     @GetMapping("users")
-    public ResponseEntity<List<User>> getAll() {
+    public ResponseEntity<ResultPaginationDTO> getAll(
+            @RequestParam("current") Optional<String> currentOption,
+                                             @RequestParam("pageSize") Optional<String> pageSizeOption) {
 
-        return ResponseEntity.ok(userService.fetchAllUser());
+        String sCurrent = currentOption.isPresent() ? currentOption.get() : "";
+        String sPageSize = pageSizeOption.isPresent() ? currentOption.get() : "";
+
+        int current = Integer.parseInt(sCurrent);
+        int pageSize = Integer.parseInt(sPageSize);
+
+        Pageable pageable = PageRequest.of(current - 1, pageSize);
+
+        return ResponseEntity.ok(userService.fetchAllUser(pageable));
     }
 
     @GetMapping("users/{id}")

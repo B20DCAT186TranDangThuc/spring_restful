@@ -1,7 +1,11 @@
 package com.dangthuc.job.springrestfulmaven.service;
 
+import com.dangthuc.job.springrestfulmaven.dto.ResultPaginationDTO;
+import com.dangthuc.job.springrestfulmaven.entity.Meta;
 import com.dangthuc.job.springrestfulmaven.entity.User;
 import com.dangthuc.job.springrestfulmaven.repository.UserRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -28,8 +32,20 @@ public class UserService {
         userRepository.deleteById(id);
     }
 
-    public List<User> fetchAllUser() {
-        return userRepository.findAll();
+    public ResultPaginationDTO fetchAllUser(Pageable pageable) {
+        Page<User> users = userRepository.findAll(pageable);
+        ResultPaginationDTO rs = new ResultPaginationDTO();
+        Meta meta = new Meta();
+
+        meta.setPage(users.getNumber() + 1);
+        meta.setTotal(users.getTotalElements());
+        meta.setPages(users.getTotalPages());
+        meta.setTotal(users.getTotalElements());
+
+        rs.setMeta(meta);
+        rs.setResult(users.getContent());
+
+        return rs;
     }
 
     public User fetchUserById(Long id) {
