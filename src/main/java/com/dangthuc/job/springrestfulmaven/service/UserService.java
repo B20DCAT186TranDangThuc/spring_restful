@@ -112,4 +112,13 @@ public class UserService {
     public boolean isIdExist(Long id) {
         return this.userRepository.existsById(id);
     }
+
+    public void updateUserToken(String token, String email) {
+        User currentUser = this.fetchUserByEmail(email);
+
+        if (currentUser != null) {
+            currentUser.setRefreshToken(token);
+            this.userRepository.save(currentUser);
+        }
+    }
 }
