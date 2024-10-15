@@ -2,6 +2,8 @@ package com.dangthuc.job.springrestfulmaven.controller;
 
 import com.dangthuc.job.springrestfulmaven.dto.LoginDTO;
 import com.dangthuc.job.springrestfulmaven.dto.ResLoginDTO;
+import com.dangthuc.job.springrestfulmaven.entity.User;
+import com.dangthuc.job.springrestfulmaven.service.UserService;
 import com.dangthuc.job.springrestfulmaven.util.SecurityUtil;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -20,11 +22,14 @@ public class AuthController {
 
     private final AuthenticationManagerBuilder authenticationManagerBuilder;
     private final SecurityUtil securityUtil;
+    private final UserService userService;
 
     public AuthController(AuthenticationManagerBuilder authenticationManagerBuilder,
-                          SecurityUtil securityUtil) {
+                          SecurityUtil securityUtil,
+                          UserService userService) {
         this.authenticationManagerBuilder = authenticationManagerBuilder;
         this.securityUtil = securityUtil;
+        this.userService = userService;
     }
 
     @PostMapping("/login")
@@ -38,8 +43,17 @@ public class AuthController {
         String accessToken = this.securityUtil.createToken(authentication);
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
-        ResLoginDTO res = new ResLoginDTO();
-        res.setAccessToken(accessToken);
+        User currentUser = this.userService.fetchUserByEmail(loginDTO.getUsername());
+
+        ResLoginDTO res = ResLoginDTO.builder()
+                .accessToken(accessToken)
+                .user(ResLoginDTO.UserLogin.builder()
+                        .id(currentUser.getId())
+                        .email(currentUser.getEmail())
+                        .name(currentUser.getName())
+                        .build())
+                .build();
+
         return ResponseEntity.ok().body(res);
     }
 
