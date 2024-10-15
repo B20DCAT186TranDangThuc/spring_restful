@@ -6,6 +6,7 @@ import com.dangthuc.job.springrestfulmaven.entity.Meta;
 import com.dangthuc.job.springrestfulmaven.repository.CompanyRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -24,13 +25,14 @@ public class CompanyService {
         return this.companyRepository.save(reqCompany);
     }
 
-    public ResultPaginationDTO handleGetCompany(Pageable pageable) {
-        Page<Company> pCompany = this.companyRepository.findAll(pageable);
+    public ResultPaginationDTO handleGetCompany(Specification<Company> spec, Pageable pageable) {
+        Page<Company> pCompany = this.companyRepository.findAll(spec, pageable);
         ResultPaginationDTO rs = new ResultPaginationDTO();
         Meta meta = new Meta();
 
-        meta.setPage(pCompany.getNumber() + 1);
-        meta.setTotal(pCompany.getTotalElements());
+        meta.setPage(pageable.getPageNumber() + 1);
+        meta.setPageSize(pageable.getPageSize());
+
         meta.setPages(pCompany.getTotalPages());
         meta.setTotal(pCompany.getTotalElements());
 

@@ -4,8 +4,10 @@ import com.dangthuc.job.springrestfulmaven.dto.ResultPaginationDTO;
 import com.dangthuc.job.springrestfulmaven.entity.User;
 import com.dangthuc.job.springrestfulmaven.service.UserService;
 import com.dangthuc.job.springrestfulmaven.util.error.IdInvalidException;
+import com.turkraft.springfilter.boot.Filter;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -42,18 +44,9 @@ public class UserController {
 
     @GetMapping("users")
     public ResponseEntity<ResultPaginationDTO> getAll(
-            @RequestParam("current") Optional<String> currentOption,
-                                             @RequestParam("pageSize") Optional<String> pageSizeOption) {
+            @Filter Specification<User> spec, Pageable pageable) {
 
-        String sCurrent = currentOption.isPresent() ? currentOption.get() : "";
-        String sPageSize = pageSizeOption.isPresent() ? currentOption.get() : "";
-
-        int current = Integer.parseInt(sCurrent);
-        int pageSize = Integer.parseInt(sPageSize);
-
-        Pageable pageable = PageRequest.of(current - 1, pageSize);
-
-        return ResponseEntity.ok(userService.fetchAllUser(pageable));
+        return ResponseEntity.ok(userService.fetchAllUser(spec, pageable));
     }
 
     @GetMapping("users/{id}")
