@@ -3,6 +3,7 @@ package com.dangthuc.job.springrestfulmaven.controller;
 import com.dangthuc.job.springrestfulmaven.dto.ResultPaginationDTO;
 import com.dangthuc.job.springrestfulmaven.entity.User;
 import com.dangthuc.job.springrestfulmaven.service.UserService;
+import com.dangthuc.job.springrestfulmaven.util.annotation.ApiMessage;
 import com.dangthuc.job.springrestfulmaven.util.error.IdInvalidException;
 import com.turkraft.springfilter.boot.Filter;
 import org.springframework.data.domain.PageRequest;
@@ -26,12 +27,14 @@ public class UserController {
     }
 
     @PostMapping("users")
+    @ApiMessage("create one users")
     public ResponseEntity<User> create(@RequestBody User request) {
 
         return ResponseEntity.status(HttpStatus.CREATED).body(userService.createUser(request));
     }
 
     @DeleteMapping("users/{id}")
+    @ApiMessage("delete one user")
     public ResponseEntity<Void> delete(@PathVariable("id") Long id) throws IdInvalidException {
 
         if (id >= 1500) {
@@ -43,6 +46,7 @@ public class UserController {
     }
 
     @GetMapping("users")
+    @ApiMessage("fetch all users")
     public ResponseEntity<ResultPaginationDTO> getAll(
             @Filter Specification<User> spec, Pageable pageable) {
 
@@ -50,12 +54,14 @@ public class UserController {
     }
 
     @GetMapping("users/{id}")
+    @ApiMessage("fetch one user")
     public ResponseEntity<User> getUserById(@PathVariable("id") Long id) {
 
         return ResponseEntity.ok(userService.fetchUserById(id));
     }
 
     @PutMapping("users")
+    @ApiMessage("update one user")
     public ResponseEntity<User> update(@RequestBody User request) {
         return ResponseEntity.ok(userService.updateUser(request));
     }

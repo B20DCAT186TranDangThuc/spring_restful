@@ -1,6 +1,7 @@
 package com.dangthuc.job.springrestfulmaven.util;
 
 import com.dangthuc.job.springrestfulmaven.entity.RestResponse;
+import com.dangthuc.job.springrestfulmaven.util.annotation.ApiMessage;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.core.MethodParameter;
 import org.springframework.http.MediaType;
@@ -38,7 +39,8 @@ public class FormatRestResponse implements ResponseBodyAdvice {
             return body;
         } else {
             res.setData(body);
-            res.setMessage("Call API Successfully");
+            ApiMessage message = returnType.getMethodAnnotation(ApiMessage.class);
+            res.setMessage(message != null ? message.value() : "Call API Success");
         }
 
         return res;
