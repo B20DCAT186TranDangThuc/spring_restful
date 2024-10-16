@@ -34,7 +34,6 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
         RestResponse<Object> res = new RestResponse<Object>();
         res.setStatusCode(HttpStatus.UNAUTHORIZED.value());
-        res.setError(authException.getCause().getMessage());
 
         String errorMessage = Optional.ofNullable(authException.getCause()) // NULL
                 .map(Throwable::getMessage)
@@ -45,4 +44,5 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
 
         mapper.writeValue(response.getWriter(), res);
     }
+
 }

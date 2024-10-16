@@ -29,10 +29,10 @@ public class Company {
 
     private String logo;
 
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss a", timezone = "GTM+7")
+//    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss a", timezone = "GTM+7")
     private Instant createAt;
-    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss a", timezone = "GTM+7")
-    private Instant updateAt;
+//    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss a", timezone = "GTM+7")
+    private Instant updatedAt;
     private String createBy;
     private String updateBy;
 
@@ -51,7 +51,7 @@ public class Company {
                 ? SecurityUtil.getCurrentUserLogin().get()
                 : "";
 
-        this.updateAt = Instant.now();
+        this.updatedAt = Instant.now();
     }
 
 }
