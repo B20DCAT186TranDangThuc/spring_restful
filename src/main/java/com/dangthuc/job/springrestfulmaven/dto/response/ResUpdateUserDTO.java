@@ -1,4 +1,4 @@
-package com.dangthuc.job.springrestfulmaven.dto;
+package com.dangthuc.job.springrestfulmaven.dto.response;
 
 import com.dangthuc.job.springrestfulmaven.util.ENUM.GenderEnum;
 import lombok.Builder;

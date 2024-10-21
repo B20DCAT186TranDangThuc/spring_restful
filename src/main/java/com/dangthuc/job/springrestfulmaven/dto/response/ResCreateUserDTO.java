@@ -1,4 +1,4 @@
-package com.dangthuc.job.springrestfulmaven.dto;
+package com.dangthuc.job.springrestfulmaven.dto.response;
 
 import com.dangthuc.job.springrestfulmaven.util.ENUM.GenderEnum;
 import lombok.Builder;
@@ -10,13 +10,12 @@ import java.time.Instant;
 @Getter
 @Setter
 @Builder
-public class ResUserDTO {
+public class ResCreateUserDTO {
     private long id;
-    private String email;
     private String name;
+    private String email;
     private GenderEnum gender;
     private String address;
     private int age;
-    private Instant updatedAt;
     private Instant createdAt;
 }

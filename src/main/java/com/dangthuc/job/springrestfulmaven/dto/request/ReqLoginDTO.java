@@ -1,4 +1,4 @@
-package com.dangthuc.job.springrestfulmaven.dto;
+package com.dangthuc.job.springrestfulmaven.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;

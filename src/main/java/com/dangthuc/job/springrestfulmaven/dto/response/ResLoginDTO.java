@@ -1,4 +1,4 @@
-package com.dangthuc.job.springrestfulmaven.dto;
+package com.dangthuc.job.springrestfulmaven.dto.response;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;

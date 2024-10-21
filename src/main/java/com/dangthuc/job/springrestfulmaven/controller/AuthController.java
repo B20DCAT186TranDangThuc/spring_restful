@@ -1,7 +1,7 @@
 package com.dangthuc.job.springrestfulmaven.controller;
 
-import com.dangthuc.job.springrestfulmaven.dto.ReqLoginDTO;
-import com.dangthuc.job.springrestfulmaven.dto.ResLoginDTO;
+import com.dangthuc.job.springrestfulmaven.dto.request.ReqLoginDTO;
+import com.dangthuc.job.springrestfulmaven.dto.response.ResLoginDTO;
 import com.dangthuc.job.springrestfulmaven.entity.User;
 import com.dangthuc.job.springrestfulmaven.service.UserService;
 import com.dangthuc.job.springrestfulmaven.util.SecurityUtil;

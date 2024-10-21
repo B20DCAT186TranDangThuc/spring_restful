@@ -1,8 +1,8 @@
 package com.dangthuc.job.springrestfulmaven.service;
 
-import com.dangthuc.job.springrestfulmaven.dto.ResCreateUserDTO;
-import com.dangthuc.job.springrestfulmaven.dto.ResUpdateUserDTO;
-import com.dangthuc.job.springrestfulmaven.dto.ResUserDTO;
+import com.dangthuc.job.springrestfulmaven.dto.response.ResCreateUserDTO;
+import com.dangthuc.job.springrestfulmaven.dto.response.ResUpdateUserDTO;
+import com.dangthuc.job.springrestfulmaven.dto.response.ResUserDTO;
 import com.dangthuc.job.springrestfulmaven.dto.ResultPaginationDTO;
 import com.dangthuc.job.springrestfulmaven.entity.User;
 import com.dangthuc.job.springrestfulmaven.repository.UserRepository;

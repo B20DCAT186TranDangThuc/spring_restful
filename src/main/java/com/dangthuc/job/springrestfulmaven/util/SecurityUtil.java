@@ -1,6 +1,6 @@
 package com.dangthuc.job.springrestfulmaven.util;
 
-import com.dangthuc.job.springrestfulmaven.dto.ResLoginDTO;
+import com.dangthuc.job.springrestfulmaven.dto.response.ResLoginDTO;
 import com.nimbusds.jose.util.Base64;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
