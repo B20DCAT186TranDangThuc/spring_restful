@@ -19,7 +19,7 @@ public class ResLoginDTO {
         private String email;
         private String name;
     }
-
+ 
     @Getter
     @Setter
     @AllArgsConstructor

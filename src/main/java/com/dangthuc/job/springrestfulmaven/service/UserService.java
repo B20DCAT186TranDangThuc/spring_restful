@@ -4,7 +4,6 @@ import com.dangthuc.job.springrestfulmaven.dto.ResCreateUserDTO;
 import com.dangthuc.job.springrestfulmaven.dto.ResUpdateUserDTO;
 import com.dangthuc.job.springrestfulmaven.dto.ResUserDTO;
 import com.dangthuc.job.springrestfulmaven.dto.ResultPaginationDTO;
-import com.dangthuc.job.springrestfulmaven.entity.Meta;
 import com.dangthuc.job.springrestfulmaven.entity.User;
 import com.dangthuc.job.springrestfulmaven.repository.UserRepository;
 import org.springframework.data.domain.Page;
@@ -64,7 +63,7 @@ public class UserService {
     public ResultPaginationDTO fetchAllUser(Specification<User> spec, Pageable pageable) {
         Page<User> users = userRepository.findAll(spec, pageable);
         ResultPaginationDTO rs = new ResultPaginationDTO();
-        Meta meta = new Meta();
+        ResultPaginationDTO.Meta meta = new ResultPaginationDTO.Meta();
 
         meta.setPage(pageable.getPageNumber() + 1);
         meta.setPageSize(pageable.getPageSize());

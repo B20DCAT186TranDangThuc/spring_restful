@@ -1,6 +1,7 @@
-package com.dangthuc.job.springrestfulmaven.service;
+package com.dangthuc.job.springrestfulmaven.config;
 
 import com.dangthuc.job.springrestfulmaven.entity.User;
+import com.dangthuc.job.springrestfulmaven.service.UserService;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

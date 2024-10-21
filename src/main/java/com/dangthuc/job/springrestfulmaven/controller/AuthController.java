@@ -1,6 +1,6 @@
 package com.dangthuc.job.springrestfulmaven.controller;
 
-import com.dangthuc.job.springrestfulmaven.dto.LoginDTO;
+import com.dangthuc.job.springrestfulmaven.dto.ReqLoginDTO;
 import com.dangthuc.job.springrestfulmaven.dto.ResLoginDTO;
 import com.dangthuc.job.springrestfulmaven.entity.User;
 import com.dangthuc.job.springrestfulmaven.service.UserService;
@@ -39,7 +39,7 @@ public class AuthController {
     }
 
     @PostMapping("/auth/login")
-    public ResponseEntity<ResLoginDTO> login(@Valid @RequestBody LoginDTO loginDTO) {
+    public ResponseEntity<ResLoginDTO> login(@Valid @RequestBody ReqLoginDTO loginDTO) {
 
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                 loginDTO.getUsername(), loginDTO.getPassword());
