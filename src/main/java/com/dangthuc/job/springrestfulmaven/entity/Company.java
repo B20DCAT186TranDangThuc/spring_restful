@@ -8,6 +8,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 import java.time.Instant;
+import java.util.List;
 
 @Entity
 @Table(name = "companies")
@@ -29,12 +30,15 @@ public class Company {
 
     private String logo;
 
-//    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss a", timezone = "GTM+7")
+    //    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss a", timezone = "GTM+7")
     private Instant createAt;
-//    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss a", timezone = "GTM+7")
+    //    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss a", timezone = "GTM+7")
     private Instant updatedAt;
     private String createBy;
     private String updateBy;
+
+    @OneToMany(mappedBy = "company", fetch = FetchType.LAZY)
+    List<User> users;
 
     @PrePersist
     public void handleBeforeCreate() {
@@ -53,5 +57,6 @@ public class Company {
 
         this.updatedAt = Instant.now();
     }
+
 
 }
