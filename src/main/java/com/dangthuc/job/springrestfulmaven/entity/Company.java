@@ -2,6 +2,7 @@ package com.dangthuc.job.springrestfulmaven.entity;
 
 import com.dangthuc.job.springrestfulmaven.util.SecurityUtil;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Getter;
@@ -38,6 +39,7 @@ public class Company {
     private String updateBy;
 
     @OneToMany(mappedBy = "company", fetch = FetchType.LAZY)
+    @JsonIgnore
     List<User> users;
 
     @PrePersist

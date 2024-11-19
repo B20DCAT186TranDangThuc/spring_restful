@@ -28,7 +28,7 @@ public class UserController {
     }
 
     @PostMapping("users")
-    @ApiMessage("create one users")
+    @ApiMessage("create one user")
     public ResponseEntity<ResCreateUserDTO> create(@Valid @RequestBody User request) throws IdInvalidException {
 
         if (this.userService.isEmailExist(request.getEmail())) {

@@ -4,6 +4,7 @@ import com.dangthuc.job.springrestfulmaven.dto.response.ResCreateUserDTO;
 import com.dangthuc.job.springrestfulmaven.dto.response.ResUpdateUserDTO;
 import com.dangthuc.job.springrestfulmaven.dto.response.ResUserDTO;
 import com.dangthuc.job.springrestfulmaven.dto.ResultPaginationDTO;
+import com.dangthuc.job.springrestfulmaven.entity.Company;
 import com.dangthuc.job.springrestfulmaven.entity.User;
 import com.dangthuc.job.springrestfulmaven.repository.UserRepository;
 import org.springframework.data.domain.Page;
@@ -18,13 +19,15 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserService {
+
     private final UserRepository userRepository;
-
     private final PasswordEncoder passwordEncoder;
+    private final CompanyService companyService;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, CompanyService companyService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+        this.companyService = companyService;
     }
 
     public boolean isEmailExist(String email) {
@@ -33,19 +36,61 @@ public class UserService {
 
     public ResCreateUserDTO createUser(User user) {
 
+        // check company
+        if (user.getCompany() != null) {
+            Optional<Company> companyOptional = this.companyService.findById(user.getCompany().getId());
+            user.setCompany(companyOptional.orElse(null));
+        }
+
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         return this.convertResCreateUserDTO(userRepository.save(user));
     }
 
     private ResCreateUserDTO convertResCreateUserDTO(User user) {
-        return ResCreateUserDTO.builder().id(user.getId()).email(user.getEmail()).name(user.getName()).address(user.getAddress()).gender(user.getGender()).createdAt(user.getCreatedAt()).build();
+        ResCreateUserDTO.CompanyUser companyUser = new ResCreateUserDTO.CompanyUser();
+        if (user.getCompany() != null) {
+            companyUser.setId(user.getCompany().getId());
+            companyUser.setName(user.getCompany().getName());
+        }
+        return ResCreateUserDTO.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .name(user.getName())
+                .address(user.getAddress())
+                .gender(user.getGender())
+                .companyUser(companyUser)
+                .createdAt(user.getCreatedAt())
+                .build();
     }
 
     private ResUserDTO convertResUserDTO(User user) {
-        return ResUserDTO.builder().id(user.getId()).email(user.getEmail()).name(user.getName()).address(user.getAddress()).gender(user.getGender()).createdAt(user.getCreatedAt()).updatedAt(user.getUpdatedAt()).build();
+
+        ResUserDTO.CompanyUser companyUser = new ResUserDTO.CompanyUser();
+
+        if (user.getCompany() != null) {
+            companyUser.setId(user.getCompany().getId());
+            companyUser.setName(user.getCompany().getName());
+        }
+
+        return ResUserDTO.builder()
+                .id(user.getId())
+                .email(user.getEmail())
+                .name(user.getName())
+                .address(user.getAddress())
+                .gender(user.getGender())
+                .companyUser(companyUser)
+                .createdAt(user.getCreatedAt())
+                .updatedAt(user.getUpdatedAt()).build();
     }
 
     private ResUpdateUserDTO convertToUpdateUserDTO(User user) {
+
+        ResUpdateUserDTO.CompanyUser companyUser = new ResUpdateUserDTO.CompanyUser();
+        if (user.getCompany() != null) {
+            companyUser.setId(user.getCompany().getId());
+            companyUser.setName(user.getCompany().getName());
+        }
+
         return ResUpdateUserDTO.builder()
                 .id(user.getId())
                 .name(user.getName())
@@ -53,6 +98,7 @@ public class UserService {
                 .updatedAt(user.getUpdatedAt())
                 .gender(user.getGender())
                 .address(user.getAddress())
+                .companyUser(companyUser)
                 .build();
     }
 
@@ -98,6 +144,11 @@ public class UserService {
             user.setAge(request.getAge());
             user.setName(request.getName());
 
+            // check company
+            if (request.getCompany() != null) {
+                Optional<Company> companyOptional = this.companyService.findById(request.getCompany().getId());
+                user.setCompany(companyOptional.orElse(null));
+            }
             user = userRepository.save(user);
         }
 
