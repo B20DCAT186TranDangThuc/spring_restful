@@ -2,11 +2,13 @@ package com.dangthuc.job.springrestfulmaven.entity;
 
 import com.dangthuc.job.springrestfulmaven.util.ENUM.GenderEnum;
 import com.dangthuc.job.springrestfulmaven.util.SecurityUtil;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
 
 import java.time.Instant;
+import java.util.List;
 
 @Entity
 @Table(name = "user")
@@ -40,6 +42,10 @@ public class User {
     @ManyToOne
     @JoinColumn(name = "company_id")
     private Company company;
+
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Resume> resumes;
 
     @PrePersist
     public void handleBeforeCreate() {

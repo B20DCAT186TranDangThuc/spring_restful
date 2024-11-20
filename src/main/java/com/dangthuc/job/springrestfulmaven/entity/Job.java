@@ -2,6 +2,7 @@ package com.dangthuc.job.springrestfulmaven.entity;
 
 import com.dangthuc.job.springrestfulmaven.util.ENUM.LevelEnum;
 import com.dangthuc.job.springrestfulmaven.util.SecurityUtil;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -50,6 +51,9 @@ public class Job {
             inverseJoinColumns = @JoinColumn(name = "skill_id"))
     private List<Skill> skills;
 
+    @OneToMany(mappedBy = "job", fetch = FetchType.LAZY)
+    @JsonIgnore
+    private List<Resume> resumes;
 
     @PrePersist
     public void handleBeforeCreate() {

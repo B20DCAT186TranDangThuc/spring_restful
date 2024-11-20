@@ -80,4 +80,8 @@ public class JobService {
     public void delete(long id) {
         this.jobRepository.deleteById(id);
     }
+
+    public boolean isIdExits(long id) {
+        return this.jobRepository.existsById(id);
+    }
 }
