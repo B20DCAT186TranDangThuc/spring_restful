@@ -4,6 +4,7 @@ import com.dangthuc.job.springrestfulmaven.entity.RestResponse;
 import com.dangthuc.job.springrestfulmaven.util.annotation.ApiMessage;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.core.MethodParameter;
+import org.springframework.core.io.Resource;
 import org.springframework.http.MediaType;
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
@@ -32,7 +33,7 @@ public class FormatRestResponse implements ResponseBodyAdvice {
         RestResponse<Object> res = new RestResponse<>();
         res.setStatusCode(status);
         //case error
-        if (body instanceof String) {
+        if (body instanceof String || body instanceof Resource) {
             return body;
         }
         if (status >= 400) {
