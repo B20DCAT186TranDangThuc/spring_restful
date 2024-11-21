@@ -4,16 +4,20 @@ import com.dangthuc.job.springrestfulmaven.util.SecurityUtil;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.Instant;
 import java.util.List;
 
 @Entity
-@Table(name = "permission")
+@Table(name = "permissions")
 @Getter
 @Setter
+@AllArgsConstructor
+@NoArgsConstructor
 public class Permission {
 
     @Id
@@ -52,6 +56,13 @@ public class Permission {
                 : "";
 
         this.updatedAt = Instant.now();
+    }
+
+    public Permission(String name, String apiPath, String method, String module) {
+        this.name = name;
+        this.apiPath = apiPath;
+        this.method = method;
+        this.module = module;
     }
 
 }

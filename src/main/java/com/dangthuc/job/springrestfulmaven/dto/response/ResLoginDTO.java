@@ -1,5 +1,6 @@
 package com.dangthuc.job.springrestfulmaven.dto.response;
 
+import com.dangthuc.job.springrestfulmaven.entity.Role;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.*;
 
@@ -18,6 +19,7 @@ public class ResLoginDTO {
         private long id;
         private String email;
         private String name;
+        private Role role;
     }
  
     @Getter
@@ -26,5 +28,15 @@ public class ResLoginDTO {
     @NoArgsConstructor
     public static class UserGetAccount {
         private UserLogin user;
+    }
+
+    @Getter
+    @Setter
+    @AllArgsConstructor
+    @NoArgsConstructor
+    public static class UserInsideToken {
+        private long id;
+        private String email;
+        private String name;
     }
 }

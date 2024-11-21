@@ -61,7 +61,22 @@ public class JobService {
     }
 
     public ResultPaginationDTO handleGetJob(Specification<Job> spec, Pageable pageable) {
-        return PaginationService.handlePagination(spec, pageable, jobRepository);
+        Page<Job> pageUser = this.jobRepository.findAll(spec, pageable);
+
+        ResultPaginationDTO rs = new ResultPaginationDTO();
+        ResultPaginationDTO.Meta mt = new ResultPaginationDTO.Meta();
+
+        mt.setPage(pageable.getPageNumber() + 1);
+        mt.setPageSize(pageable.getPageSize());
+
+        mt.setPages(pageUser.getTotalPages());
+        mt.setTotal(pageUser.getTotalElements());
+
+        rs.setMeta(mt);
+
+        rs.setResult(pageUser.getContent());
+
+        return rs;
     }
 
     public void delete(long id) {

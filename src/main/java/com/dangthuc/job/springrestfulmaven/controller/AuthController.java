@@ -1,6 +1,7 @@
 package com.dangthuc.job.springrestfulmaven.controller;
 
 import com.dangthuc.job.springrestfulmaven.dto.request.ReqLoginDTO;
+import com.dangthuc.job.springrestfulmaven.dto.response.ResCreateUserDTO;
 import com.dangthuc.job.springrestfulmaven.dto.response.ResLoginDTO;
 import com.dangthuc.job.springrestfulmaven.entity.User;
 import com.dangthuc.job.springrestfulmaven.service.UserService;
@@ -10,6 +11,7 @@ import com.dangthuc.job.springrestfulmaven.util.error.IdInvalidException;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseCookie;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -56,10 +58,11 @@ public class AuthController {
                         .id(currentUser.getId())
                         .email(currentUser.getEmail())
                         .name(currentUser.getName())
+                        .role(currentUser.getRole())
                         .build())
                 .build();
         // create a tokent
-        String accessToken = this.securityUtil.createAccessToken(authentication.getName(), res.getUser());
+        String accessToken = this.securityUtil.createAccessToken(authentication.getName(), res);
 
         res.setAccessToken(accessToken);
 
@@ -122,10 +125,11 @@ public class AuthController {
                         .id(currentUser.getId())
                         .email(currentUser.getEmail())
                         .name(currentUser.getName())
+                        .role(currentUser.getRole())
                         .build())
                 .build();
         // create a tokent
-        String accessToken = this.securityUtil.createAccessToken(email, res.getUser());
+        String accessToken = this.securityUtil.createAccessToken(email, res);
 
         res.setAccessToken(accessToken);
 
@@ -168,5 +172,17 @@ public class AuthController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.SET_COOKIE, deleteSpringCookie.toString())
                 .body(null);
+    }
+
+    @PostMapping("/auth/register")
+    @ApiMessage("Register a new user")
+    public ResponseEntity<ResCreateUserDTO> register(@Valid @RequestBody User postManUser) throws IdInvalidException {
+        boolean isEmailExist = this.userService.isEmailExist(postManUser.getEmail());
+        if (isEmailExist) {
+            throw new IdInvalidException(
+                    "Email " + postManUser.getEmail() + "đã tồn tại, vui lòng sử dụng email khác.");
+        }
+        ResCreateUserDTO ericUser = this.userService.createUser(postManUser);
+        return ResponseEntity.status(HttpStatus.CREATED).body(ericUser);
     }
 }

@@ -2,15 +2,19 @@ package com.dangthuc.job.springrestfulmaven.controller;
 
 import com.dangthuc.job.springrestfulmaven.dto.ResultPaginationDTO;
 import com.dangthuc.job.springrestfulmaven.dto.response.ResResumeDTO;
+import com.dangthuc.job.springrestfulmaven.entity.Company;
 import com.dangthuc.job.springrestfulmaven.entity.Job;
 import com.dangthuc.job.springrestfulmaven.entity.Resume;
 import com.dangthuc.job.springrestfulmaven.entity.User;
 import com.dangthuc.job.springrestfulmaven.service.JobService;
 import com.dangthuc.job.springrestfulmaven.service.ResumeService;
 import com.dangthuc.job.springrestfulmaven.service.UserService;
+import com.dangthuc.job.springrestfulmaven.util.SecurityUtil;
 import com.dangthuc.job.springrestfulmaven.util.annotation.ApiMessage;
 import com.dangthuc.job.springrestfulmaven.util.error.IdInvalidException;
 import com.turkraft.springfilter.boot.Filter;
+import com.turkraft.springfilter.builder.FilterBuilder;
+import com.turkraft.springfilter.converter.FilterSpecificationConverter;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Pageable;
@@ -19,12 +23,21 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 @RestController
 @RequestMapping("/api/v1")
 public class ResumeController {
 
     @Autowired
     private ResumeService resumeService;
+    @Autowired
+    private UserService userService;
+    @Autowired
+    private FilterBuilder filterBuilder;
+    @Autowired
+    private FilterSpecificationConverter filterSpecificationConverter;
 
     @PostMapping("/resumes")
     @ApiMessage("create a resume")
@@ -71,6 +84,30 @@ public class ResumeController {
     @ApiMessage("fetch all resumes")
     public ResponseEntity<ResultPaginationDTO> fetchAllResume(@Filter Specification<Resume> spec,
                                                               Pageable pageable) {
+        List<Long> arrJobIds = null;
+        String email = SecurityUtil.getCurrentUserLogin().isPresent() == true
+                ? SecurityUtil.getCurrentUserLogin().get()
+                : "";
+        User currentUser = this.userService.fetchUserByEmail(email);
+        if (currentUser != null) {
+            Company userCompany = currentUser.getCompany();
+            if (userCompany != null) {
+                List<Job> companyJobs = userCompany.getJobs();
+                if (companyJobs != null && companyJobs.size() > 0) {
+                    arrJobIds = companyJobs.stream().map(x -> x.getId())
+                            .collect(Collectors.toList());
+                }
+            }
+        }
+        Specification<Resume> jobInSpec = filterSpecificationConverter.convert(filterBuilder.field("job")
+                .in(filterBuilder.input(arrJobIds)).get());
+        Specification<Resume> finalSpec = jobInSpec.and(spec);
         return ResponseEntity.ok(this.resumeService.handleGetResume(spec, pageable));
+    }
+
+    @PostMapping("/resumes/by-user")
+    @ApiMessage("get list resumes by user")
+    public ResponseEntity<ResultPaginationDTO> fetchResumeByUser(Pageable pageable) {
+        return ResponseEntity.ok().body(resumeService.fetchResumeByUser(pageable));
     }
 }

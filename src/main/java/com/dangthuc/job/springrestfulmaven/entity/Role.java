@@ -1,6 +1,7 @@
 package com.dangthuc.job.springrestfulmaven.entity;
 
 import com.dangthuc.job.springrestfulmaven.util.SecurityUtil;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -33,6 +34,10 @@ public class Role {
     @JsonIgnoreProperties(value = {"roles"})
     @JoinTable(name = "permission_role", joinColumns = @JoinColumn(name = "role_id"), inverseJoinColumns = @JoinColumn(name = "permission_id"))
     List<Permission> permissions;
+
+    @OneToMany(mappedBy = "role", fetch = FetchType.LAZY)
+    @JsonIgnore
+    List<User> users;
 
     @PrePersist
     public void handleBeforeCreate() {

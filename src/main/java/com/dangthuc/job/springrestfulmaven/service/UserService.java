@@ -5,6 +5,7 @@ import com.dangthuc.job.springrestfulmaven.dto.response.ResUpdateUserDTO;
 import com.dangthuc.job.springrestfulmaven.dto.response.ResUserDTO;
 import com.dangthuc.job.springrestfulmaven.dto.ResultPaginationDTO;
 import com.dangthuc.job.springrestfulmaven.entity.Company;
+import com.dangthuc.job.springrestfulmaven.entity.Role;
 import com.dangthuc.job.springrestfulmaven.entity.User;
 import com.dangthuc.job.springrestfulmaven.repository.UserRepository;
 import org.springframework.data.domain.Page;
@@ -23,11 +24,14 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final CompanyService companyService;
+    private final RoleService roleService;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder, CompanyService companyService) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder,
+                       CompanyService companyService, RoleService roleService) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
         this.companyService = companyService;
+        this.roleService = roleService;
     }
 
     public boolean isEmailExist(String email) {
@@ -40,6 +44,11 @@ public class UserService {
         if (user.getCompany() != null) {
             Optional<Company> companyOptional = this.companyService.findById(user.getCompany().getId());
             user.setCompany(companyOptional.orElse(null));
+        }
+        // check role
+        if (user.getRole() != null) {
+            Role role = roleService.fetchById(user.getRole().getId());
+            user.setRole(role);
         }
 
         user.setPassword(passwordEncoder.encode(user.getPassword()));
@@ -65,20 +74,18 @@ public class UserService {
 
     private ResUserDTO convertResUserDTO(User user) {
 
-        ResUserDTO.CompanyUser companyUser = new ResUserDTO.CompanyUser();
-
-        if (user.getCompany() != null) {
-            companyUser.setId(user.getCompany().getId());
-            companyUser.setName(user.getCompany().getName());
-        }
-
         return ResUserDTO.builder()
                 .id(user.getId())
                 .email(user.getEmail())
                 .name(user.getName())
                 .address(user.getAddress())
                 .gender(user.getGender())
-                .companyUser(companyUser)
+                .company(user.getCompany() != null ? new ResUserDTO.CompanyUser(
+                        user.getCompany().getId(),
+                        user.getCompany().getName()) : null)
+                .role(user.getRole() != null ? new ResUserDTO.RoleUser(
+                        user.getRole().getId(),
+                        user.getRole().getName()) : null)
                 .createdAt(user.getCreatedAt())
                 .updatedAt(user.getUpdatedAt()).build();
     }
@@ -107,7 +114,20 @@ public class UserService {
     }
 
     public ResultPaginationDTO fetchAllUser(Specification<User> spec, Pageable pageable) {
-        return PaginationService.handlePagination(spec, pageable, userRepository);
+        ResultPaginationDTO paginationDTO = PaginationService.handlePagination(spec, pageable, userRepository);
+
+        @SuppressWarnings("unchecked")
+        List<User> users = (List<User>) paginationDTO.getResult();
+
+        // Chuyển đổi từ User sang ResUserDTO
+        List<ResUserDTO> convertedResults = users.stream()
+                .map(this::convertResUserDTO)
+                .toList();
+
+        // Cập nhật lại result sau khi convert
+        paginationDTO.setResult(convertedResults);
+
+        return paginationDTO;
     }
 
     public ResUserDTO fetchUserById(Long id) {
@@ -131,6 +151,11 @@ public class UserService {
             if (request.getCompany() != null) {
                 Optional<Company> companyOptional = this.companyService.findById(request.getCompany().getId());
                 user.setCompany(companyOptional.orElse(null));
+            }
+            // check role
+            if (request.getRole() != null) {
+                Role role = roleService.fetchById(request.getRole().getId());
+                user.setRole(role);
             }
             user = userRepository.save(user);
         }

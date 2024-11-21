@@ -9,13 +9,22 @@ import com.dangthuc.job.springrestfulmaven.entity.User;
 import com.dangthuc.job.springrestfulmaven.repository.JobRepository;
 import com.dangthuc.job.springrestfulmaven.repository.ResumeRepository;
 import com.dangthuc.job.springrestfulmaven.repository.UserRepository;
+import com.dangthuc.job.springrestfulmaven.util.SecurityUtil;
 import com.dangthuc.job.springrestfulmaven.util.error.IdInvalidException;
+import com.turkraft.springfilter.builder.FilterBuilder;
+import com.turkraft.springfilter.converter.FilterSpecification;
+import com.turkraft.springfilter.converter.FilterSpecificationConverter;
+import com.turkraft.springfilter.parser.FilterParser;
+import com.turkraft.springfilter.parser.node.FilterNode;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class ResumeService {
@@ -28,6 +37,13 @@ public class ResumeService {
 
     @Autowired
     private JobRepository jobRepository;
+
+    @Autowired
+    FilterBuilder fb;
+    @Autowired
+    private FilterParser filterParser;
+    @Autowired
+    private FilterSpecificationConverter filterSpecificationConverter;
 
     public ResCreateResumeDTO saveOrUpdateResume(@Valid Resume resume) throws IdInvalidException {
         Resume savedResume;
@@ -109,4 +125,26 @@ public class ResumeService {
         return PaginationService.handlePagination(spec, pageable, resumeRepository);
     }
 
+    public ResultPaginationDTO fetchResumeByUser(Pageable pageable) {
+        // query builder
+        String email = SecurityUtil.getCurrentUserLogin().isPresent() == true
+                ? SecurityUtil.getCurrentUserLogin().get()
+                : "";
+        FilterNode node = filterParser.parse("email='" + email + "'");
+        FilterSpecification<Resume> spec = filterSpecificationConverter.convert(node);
+        Page<Resume> pageResume = this.resumeRepository.findAll(spec, pageable);
+        ResultPaginationDTO rs = new ResultPaginationDTO();
+        ResultPaginationDTO.Meta mt = new ResultPaginationDTO.Meta();
+        mt.setPage(pageable.getPageNumber() + 1);
+        mt.setPageSize(pageable.getPageSize());
+        mt.setPages(pageResume.getTotalPages());
+        mt.setTotal(pageResume.getTotalElements());
+        rs.setMeta(mt);
+        // remove sensitive data
+        List<ResResumeDTO> listResume = pageResume.getContent()
+                .stream().map(this::toResResumeDTO)
+                .collect(Collectors.toList());
+        rs.setResult(listResume);
+        return rs;
+    }
 }

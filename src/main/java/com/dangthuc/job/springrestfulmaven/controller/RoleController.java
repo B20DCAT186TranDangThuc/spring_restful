@@ -40,9 +40,9 @@ public class RoleController {
             throw new IdInvalidException("Role voi id = " + role.getId() + "khong ton tai");
         }
 
-        if (roleService.exitsByName(role.getName())) {
-            throw new IdInvalidException("Role voi name = " + role.getName() + " da ton tai");
-        }
+//        if (roleService.exitsByName(role.getName())) {
+//            throw new IdInvalidException("Role voi name = " + role.getName() + " da ton tai");
+//        }
 
         return ResponseEntity.status(HttpStatus.OK).body(roleService.handleSave(role));
     }
