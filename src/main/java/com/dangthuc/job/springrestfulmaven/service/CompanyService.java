@@ -30,20 +30,7 @@ public class CompanyService {
     }
 
     public ResultPaginationDTO handleGetCompany(Specification<Company> spec, Pageable pageable) {
-        Page<Company> pCompany = this.companyRepository.findAll(spec, pageable);
-        ResultPaginationDTO rs = new ResultPaginationDTO();
-        ResultPaginationDTO.Meta meta = new ResultPaginationDTO.Meta();
-
-        meta.setPage(pageable.getPageNumber() + 1);
-        meta.setPageSize(pageable.getPageSize());
-
-        meta.setPages(pCompany.getTotalPages());
-        meta.setTotal(pCompany.getTotalElements());
-
-        rs.setMeta(meta);
-        rs.setResult(pCompany.getContent());
-
-        return rs;
+        return PaginationService.handlePagination(spec, pageable, companyRepository);
     }
 
     public Company handleUpdateCompany(Company reqCompany) {

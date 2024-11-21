@@ -36,20 +36,7 @@ public class SkillService {
     }
 
     public ResultPaginationDTO handleGetSkill(Specification<Skill> spec, Pageable pageable) {
-        Page<Skill> pSkill = this.skillRepository.findAll(spec, pageable);
-        ResultPaginationDTO rs = new ResultPaginationDTO();
-        ResultPaginationDTO.Meta meta = new ResultPaginationDTO.Meta();
-
-        meta.setPage(pageable.getPageNumber() + 1);
-        meta.setPageSize(pageable.getPageSize());
-
-        meta.setPages(pSkill.getTotalPages());
-        meta.setTotal(pSkill.getTotalElements());
-
-        rs.setMeta(meta);
-        rs.setResult(pSkill.getContent());
-
-        return rs;
+        return PaginationService.handlePagination(spec, pageable, skillRepository);
     }
 
     public void deleteById(Long id) {

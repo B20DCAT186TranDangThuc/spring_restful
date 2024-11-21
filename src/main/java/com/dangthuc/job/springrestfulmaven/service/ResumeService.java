@@ -106,20 +106,7 @@ public class ResumeService {
     }
 
     public ResultPaginationDTO handleGetResume(Specification<Resume> spec, Pageable pageable) {
-        Page<Resume> pResume = this.resumeRepository.findAll(spec, pageable);
-        ResultPaginationDTO rs = new ResultPaginationDTO();
-        ResultPaginationDTO.Meta meta = new ResultPaginationDTO.Meta();
-
-        meta.setPage(pageable.getPageNumber() + 1);
-        meta.setPageSize(pageable.getPageSize());
-
-        meta.setPages(pResume.getTotalPages());
-        meta.setTotal(pResume.getTotalElements());
-
-        rs.setMeta(meta);
-        rs.setResult(pResume.getContent().stream().map(this::toResResumeDTO).toList());
-
-        return rs;
+        return PaginationService.handlePagination(spec, pageable, resumeRepository);
     }
 
 }
