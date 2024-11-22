@@ -100,9 +100,7 @@ public class SubscriberService {
             }
         }
     }
-
-    @Scheduled(fixedDelay = 1000)
-    public void testCron() {
-        System.out.println("Test Cron");
+    public Subscriber findByEmail(String email) {
+        return this.subscriberRepository.findByEmail(email);
     }
 }

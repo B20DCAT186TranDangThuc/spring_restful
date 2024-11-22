@@ -3,6 +3,7 @@ package com.dangthuc.job.springrestfulmaven.controller;
 
 import com.dangthuc.job.springrestfulmaven.entity.Subscriber;
 import com.dangthuc.job.springrestfulmaven.service.SubscriberService;
+import com.dangthuc.job.springrestfulmaven.util.SecurityUtil;
 import com.dangthuc.job.springrestfulmaven.util.annotation.ApiMessage;
 import com.dangthuc.job.springrestfulmaven.util.error.IdInvalidException;
 import jakarta.validation.Valid;
@@ -36,5 +37,13 @@ public class SubscriberController {
             throw new IdInvalidException("Id " + subsRequest.getId() + " không tồn tại");
         }
         return ResponseEntity.ok().body(this.subscriberService.update(subsDB, subsRequest));
+    }
+
+    @PostMapping("/subscribers/skill")
+    @ApiMessage("Get subscriber's skill")
+    public ResponseEntity<Subscriber> getSubscribersSkill() {
+        String email = SecurityUtil.getCurrentUserLogin().isPresent()? SecurityUtil.getCurrentUserLogin().get() : "";
+
+        return ResponseEntity.ok().body(this.subscriberService.findByEmail(email));
     }
 }

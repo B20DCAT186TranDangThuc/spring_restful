@@ -24,8 +24,8 @@ public class GlobalException {
     public ResponseEntity<RestResponse<Object>> handleForbidden(Exception ex) {
         RestResponse<Object> res = new RestResponse<>();
         res.setStatusCode(HttpStatus.FORBIDDEN.value());
-        res.setError("Forbidden");
-        res.setMessage(ex.getMessage());
+        res.setMessage("Forbidden");
+        res.setError(ex.getMessage());
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(res);
     }
 
@@ -49,8 +49,8 @@ public class GlobalException {
     public ResponseEntity<RestResponse<Object>> handleFileUploadException(Exception ex) {
         RestResponse<Object> res = new RestResponse<>();
         res.setStatusCode(HttpStatus.BAD_REQUEST.value());
-        res.setError("Exception upload file");
-        res.setMessage(ex.getMessage());
+        res.setMessage("Exception upload file");
+        res.setError(ex.getMessage());
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
     }
 
@@ -60,8 +60,8 @@ public class GlobalException {
     public ResponseEntity<RestResponse<Object>> handleNoResourceFoundException(Exception ex) {
         RestResponse<Object> res = new RestResponse<>();
         res.setStatusCode(HttpStatus.NOT_FOUND.value());
-        res.setError(ex.getMessage());
-        res.setMessage("404 Not Found. URL may not exits...");
+        res.setMessage(ex.getMessage());
+        res.setError("404 Not Found. URL may not exits...");
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
     }
 
@@ -79,4 +79,14 @@ public class GlobalException {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
     }
+
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<RestResponse<Object>> handleAllException(Exception ex) {
+        RestResponse<Object> res = new RestResponse<Object>();
+        res.setStatusCode(HttpStatus.INTERNAL_SERVER_ERROR.value());
+        res.setMessage(ex.getMessage());
+        res.setError("Internal Server Error");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(res);
+    }
+
 }
