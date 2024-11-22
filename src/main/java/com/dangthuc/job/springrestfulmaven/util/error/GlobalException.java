@@ -19,6 +19,17 @@ import java.util.stream.Collectors;
 public class GlobalException {
 
     @ExceptionHandler(value = {
+            PermissionException.class
+    })
+    public ResponseEntity<RestResponse<Object>> handleForbidden(Exception ex) {
+        RestResponse<Object> res = new RestResponse<>();
+        res.setStatusCode(HttpStatus.FORBIDDEN.value());
+        res.setError("Forbidden");
+        res.setMessage(ex.getMessage());
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(res);
+    }
+
+    @ExceptionHandler(value = {
             UsernameNotFoundException.class,
             BadCredentialsException.class,
             IdInvalidException.class
@@ -68,5 +79,4 @@ public class GlobalException {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(res);
     }
-
 }

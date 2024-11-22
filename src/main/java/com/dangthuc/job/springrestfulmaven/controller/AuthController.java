@@ -97,6 +97,7 @@ public class AuthController {
                 .id(currentUser.getId())
                 .email(currentUser.getEmail())
                 .name(currentUser.getName())
+                .role(currentUser.getRole())
                 .build();
 
         ResLoginDTO.UserGetAccount userGetAccount = new ResLoginDTO.UserGetAccount();
